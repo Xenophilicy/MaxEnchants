@@ -1,0 +1,13 @@
+name: MaxEnchants
+author: Xenophilicy
+version: 1.0.0
+main: Xenophilicy\MaxEnchants\MaxEnchants
+api: 3.0.0
+description: Enable enchants up to level 32k!
+commands:
+  maxenchants:
+    description: Get info on MaxEnchants
+    permission: maxenchants.info
+permissions: 
+  maxenchants.info:
+    default: op
