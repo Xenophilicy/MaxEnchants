@@ -47,7 +47,6 @@ class MaxEnchants extends PluginBase implements Listener{
                 if($this->config->getNested("Command.Override")){
                     $cmdInstance->setLabel("_".$cmdInstance->getName());
                     $this->getServer()->getCommandMap()->unregister($cmdInstance);
-                    $this->getLogger()->notice("Unregistered default command: /".$cmdInstance->getName());
                 } else{
                     $this->getLogger()->critical("Command override disabled in config but command name is set to a default command, please change it to prevent interference with other commands! Plugin will remain disabled...");
                     $pluginManager->disablePlugin($this);
@@ -60,7 +59,6 @@ class MaxEnchants extends PluginBase implements Listener{
                 $cmd->setPermission($this->config->getNested("Command.Permission.Node"));
             }
             $this->getServer()->getCommandMap()->register("MaxEnchants", $cmd, $this->cmdName);
-            $this->getLogger()->notice("Registered MaxEnchants command: /".$this->cmdName);
         }
         $this->buildVanillaEnchantArray();
     }
