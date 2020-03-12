@@ -32,9 +32,21 @@ class MaxEnchants extends PluginBase implements Listener{
         $this->config->getAll();
         $version = $this->config->get("VERSION");
         $this->pluginVersion = $this->getDescription()->getVersion();
-        if($version < "1.0.0"){
+        if($version < "1.1.0"){
             $this->getLogger()->warning("You have updated MaxEnchants to v".$this->pluginVersion." but have a config from v$version! Please delete your old config for new features to be enabled and to prevent unwanted errors! Plugin will remain disabled...");
             $pluginManager->disablePlugin($this);
+        }
+        $include = $this->config->getNested("Broadcast.SendTo");
+        if($include !== "" && $include !== null){
+            foreach($include as $inclusion){
+                if(strtolower($inclusion) == "console" || strtolower($inclusion) == "sender" || strtolower($inclusion) == "target"){
+                    continue;
+                } else{
+                    $this->getLogger()->critical("Invalid message recipient list, allowed recipients are console, sender, and target. Plugin will remain disabled...");
+                    $pluginManager->disablePlugin($this);
+                    return;
+                }
+            }
         }
         $this->maxLevel = $this->config->get("Max-Level") >= 32767 ? 32767:$this->config->get("Max-Level");
         $this->cmdName = str_replace("/","",$this->config->getNested("Command.Name"));
@@ -73,7 +85,7 @@ class MaxEnchants extends PluginBase implements Listener{
                 break;
             }
             $enchantment = Enchantment::getEnchantment($id);
-            if ($enchantment instanceof Enchantment) {
+            if($enchantment instanceof Enchantment){
                 $this->vanillaEnchants[$enchantment->getName()] = ucwords(strtolower(str_replace("_", " ", $name)));
             }
         }
@@ -121,7 +133,34 @@ class MaxEnchants extends PluginBase implements Listener{
         $item->addEnchantment(new EnchantmentInstance($enchantment, $level));
         $player->getInventory()->setItemInHand($item);
         $enchantmentName = $this->vanillaEnchants[$enchantment->getName()] ?? $enchantment->getName();
-        $this->getServer()->broadcastMessage(TF::GREEN."Successfully added ".TF::BLUE.$enchantmentName.TF::GREEN." level ".TF::BLUE.$level.TF::GREEN." for ".$player->getName());
+        $this->broadcast($enchantmentName, $level, $player, $sender);
+        return;
+    }
+
+    private function broadcast(string $name, string $level, Player $target, $sender) : void{
+        $msgString = $this->config->getNested("Broadcast.Message");
+        $include = $this->config->getNested("Broadcast.SendTo");
+        $msgString = str_replace("{name}", $name, $msgString);
+        $msgString = str_replace("{level}", $level, $msgString);
+        $msgString = str_replace("{target}", $target->getName(), $msgString);
+        if($sender instanceof Player){
+            $msgString = str_replace("{sender}", $sender->getName(), $msgString);
+        } else{
+            $msgString = str_replace("{sender}", "CONSOLE", $msgString);
+        }
+        $msgString = str_replace("&", "§", $msgString);
+        if($include !== "" && $include !== null && $include !== []){
+            $include = strtolower(implode(",", $include));
+            if(strpos($include, "console") !== false){
+                $this->getLogger()->info(TF::clean($msgString));
+            }
+            if(strpos($include, "target") !== false){
+                $target->sendMessage($msgString);
+            }
+            if(strpos($include, "sender") !== false && $sender instanceof Player){
+                $sender->sendMessage($msgString);
+            }
+        }
         return;
     }
 
@@ -134,11 +173,7 @@ class MaxEnchants extends PluginBase implements Listener{
             $sender->sendMessage(TF::GRAY."-------------------");
         }
         if($command->getName() == $this->cmdName){
-            if($sender instanceof Player){
-                $this->enchantItem($sender, $args);
-            } else{
-                $sender->sendMessage(TF::RED."This is an in-game command only!");
-            }
+            $this->enchantItem($sender, $args);
         }
         return true;
     }
