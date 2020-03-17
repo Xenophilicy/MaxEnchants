@@ -8,6 +8,8 @@
 ## Information
 MaxEnchants is a simple plugin to allow servers to take full advantage of the enchanting of items. You can enchant items and blocks with any level of enchantment and they will perform just as if that was enchanted with the normal server command! You use the same command to enchant with and the exact same syntax. The only difference here is that the levels can be had up to 32k!
 
+### [Click here to download MaxEnchants from Poggit](https://poggit.pmmp.io/p/MaxEnchants/)
+
 ***
 
 ## MaxEnchants Details
@@ -18,7 +20,7 @@ MaxEnchants is a simple plugin to allow servers to take full advantage of the en
 ***
 
 ## Dependencies
-**DevTools → https://github.com/pmmp/PocketMine-DevTools** *(If you are using the plugin folder method)*
+**DevTools → https://github.com/pmmp/PocketMine-DevTools** *(If you're running the plugin from source)*
 
 ## Credits
 * [Xenophilicy](https://github.com/Xenophilicy/)
