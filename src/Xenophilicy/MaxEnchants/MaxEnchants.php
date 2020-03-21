@@ -32,12 +32,12 @@ class MaxEnchants extends PluginBase implements Listener{
         $this->config->getAll();
         $version = $this->config->get("VERSION");
         $this->pluginVersion = $this->getDescription()->getVersion();
-        if($version < "1.1.0"){
+        if($version < "1.2.0"){
             $this->getLogger()->warning("You have updated MaxEnchants to v".$this->pluginVersion." but have a config from v$version! Please delete your old config for new features to be enabled and to prevent unwanted errors! Plugin will remain disabled...");
             $pluginManager->disablePlugin($this);
         }
         $include = $this->config->getNested("Broadcast.SendTo");
-        if($include !== "" && $include !== null){
+        if($include !== "" && !is_null($include)){
             foreach($include as $inclusion){
                 if(strtolower($inclusion) == "console" || strtolower($inclusion) == "sender" || strtolower($inclusion) == "target"){
                     continue;
@@ -48,9 +48,27 @@ class MaxEnchants extends PluginBase implements Listener{
                 }
             }
         }
+        $this->buildVanillaEnchantArray();
+        $maxLevels = $this->config->get("Custom-Max-Levels");
+        if($maxLevels !== false){
+            if(is_null($maxLevels) || $maxLevels == "" || !is_array($maxLevels)){
+                $this->getLogger()->critical("Invalid custom max levels array found, disabling plugin...");
+                $pluginManager->disablePlugin($this);
+                return;
+            } else{
+                foreach($maxLevels as $id => $level){
+                    if(!is_int($id) || !is_int($level) || !$this->isValidEnchant($id)){
+                        $this->getLogger()->warning("Invalid max level found at $id, it will not be included!");
+                    } else{
+                        $enchantment = Enchantment::getEnchantment($id);
+                        $this->customMaxLevels[$enchantment->getName()] = $level;
+                    }
+                }
+            }
+        }
         $this->maxLevel = $this->config->get("Max-Level") >= 32767 ? 32767:$this->config->get("Max-Level");
         $this->cmdName = str_replace("/","",$this->config->getNested("Command.Name"));
-        if($this->cmdName == null || $this->cmdName == ""){
+        if(is_null($this->cmdName) || $this->cmdName == ""){
             $this->getLogger()->critical("Invalid enchant command string found, disabling plugin...");
             $pluginManager->disablePlugin($this);
             return;
@@ -72,7 +90,15 @@ class MaxEnchants extends PluginBase implements Listener{
             }
             $this->getServer()->getCommandMap()->register("MaxEnchants", $cmd, $this->cmdName);
         }
-        $this->buildVanillaEnchantArray();
+    }
+
+    private function isValidEnchant($id) : bool{
+        foreach(array_values($this->vanillaEnchants) as $ench){
+            if($ench[1] === $id){
+                return true;
+            }
+        }
+        return false;
     }
 
     private function buildVanillaEnchantArray() : void{
@@ -86,7 +112,7 @@ class MaxEnchants extends PluginBase implements Listener{
             }
             $enchantment = Enchantment::getEnchantment($id);
             if($enchantment instanceof Enchantment){
-                $this->vanillaEnchants[$enchantment->getName()] = ucwords(strtolower(str_replace("_", " ", $name)));
+                $this->vanillaEnchants[$enchantment->getName()] = [ucwords(strtolower(str_replace("_", " ", $name))), $lastId];
             }
         }
         return;
@@ -118,11 +144,17 @@ class MaxEnchants extends PluginBase implements Listener{
             if(!is_numeric($args[2])){
                 $sender->sendMessage(TF::RED."Enchantment level must be numeric");
                 return;
-            } elseif(($desiredLevel = (int) $args[2]) > $this->maxLevel){
-                $sender->sendMessage(TF::RED."Enchantment level must be less than ".TF::YELLOW.$this->maxLevel);
-                return;
-            } elseif($desiredLevel < 1){
+            } elseif(($desiredLevel = (int) $args[2]) < 1){
                 $sender->sendMessage(TF::RED."Enchantment level must be greater than ".TF::YELLOW."1");
+                return;
+            }
+            if(in_array($enchantment->getName(), array_keys($this->customMaxLevels))){
+                $max = $this->customMaxLevels[$enchantment->getName()];
+            } else{
+                $max = $this->maxLevel;
+            }
+            if($desiredLevel > $max){
+                $sender->sendMessage(TF::RED."Enchantment level can be at most ".TF::YELLOW.$max);
                 return;
             } else{
                 $level = $args[2];
@@ -132,7 +164,7 @@ class MaxEnchants extends PluginBase implements Listener{
         }
         $item->addEnchantment(new EnchantmentInstance($enchantment, $level));
         $player->getInventory()->setItemInHand($item);
-        $enchantmentName = $this->vanillaEnchants[$enchantment->getName()] ?? $enchantment->getName();
+        $enchantmentName = $this->vanillaEnchants[$enchantment->getName()][0] ?? $enchantment->getName();
         $this->broadcast($enchantmentName, $level, $player, $sender);
         return;
     }
@@ -149,7 +181,7 @@ class MaxEnchants extends PluginBase implements Listener{
             $msgString = str_replace("{sender}", "CONSOLE", $msgString);
         }
         $msgString = str_replace("&", "§", $msgString);
-        if($include !== "" && $include !== null && $include !== []){
+        if($include !== "" && !is_null($include) && $include !== []){
             $include = strtolower(implode(",", $include));
             if(strpos($include, "console") !== false){
                 $this->getLogger()->info(TF::clean($msgString));

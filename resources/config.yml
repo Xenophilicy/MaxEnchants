@@ -11,18 +11,28 @@
 #                                         $$ |                                      /  \__$$ |
 #                                         $$ |                                      $$    $$/
 #                                         $$/                                        $$$$$$/
-VERSION: "1.1.0" # Internal use only
+VERSION: "1.2.0" # Internal use only
 
 # This is the max allowed enchanting level with the command in-game
 # Minecraft: Bedrock Edition has a maximum of 32767 enchantment levels
+# This will be used as a hard limit for any enchantment not listed in the custom levels
 Max-Level: 5000
+
+# Here you can list enchantments that should have specific max levels
+# Set to false if you want all enchantments to use the same max level
+# Format: enchantmentID:maxLevel
+# A list of enchantment IDs is supplied at the bottom of this file
+Custom-Max-Levels:
+  4: 3500 # Projectile Protection (4) has a max level of 3500
+  15: 7000 # Efficiency (15) has a max level of 7000
+  22: 1 # Infinity (22) has a max level of 1
 
 # Here you can specify enchantment broadcast message settings
 Broadcast:
 
   # Choose who should receive the broadcast messages
   # Options are sender, target, console
-  # Add any number of recipients to this key
+  # Add any combination of recipients to this key
   # Leave blank if you want no broadcasts
   SendTo:
   - "sender"
@@ -42,7 +52,7 @@ Command:
   Name: "/enchant"
 
   # This is the command's description shown in the command window
-  Description: "Enchant items up to level 5000"
+  Description: "Adds enchantments on items"
 
   Permission:
 
@@ -55,3 +65,24 @@ Command:
   # This is an option to override an existing command with the one from MaxEnchants
   # Keeping this true makes sure that there are not two types of the same command
   Override: true
+
+# Implemented enchantment IDs
+# Protection - 0
+# Fire Protection - 1
+# Feather Falling - 2
+# Blast Protection - 3
+# Projectile Protection - 4
+# Thorns - 5
+# Respiration - 6
+# Sharpness - 9
+# Knockback - 12
+# Fire Aspect - 13
+# Efficiency - 15
+# Silk Touch - 16
+# Unbreaking - 17
+# Power - 19
+# Punch - 20
+# Flame - 21
+# Infinity - 22
+# Mending - 26
+# Vanishing - 28
