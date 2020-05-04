@@ -5,4 +5,6 @@ branches:
 projects:
   MaxEnchants:
     path: ""
+    lint:
+      phpstan: false
 ...
