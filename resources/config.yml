@@ -35,8 +35,8 @@ Broadcast:
   # Add any combination of recipients to this key
   # Leave blank if you want no broadcasts
   SendTo:
-  - "sender"
-  - "console"
+    - "sender"
+    - "console"
 
   # This is the message that will be broadcasted to the selected recipients
   # Available tags are:

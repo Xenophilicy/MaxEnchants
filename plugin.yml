@@ -8,6 +8,6 @@ commands:
   maxenchants:
     description: Get info on MaxEnchants
     permission: maxenchants.info
-permissions: 
+permissions:
   maxenchants.info:
     default: op

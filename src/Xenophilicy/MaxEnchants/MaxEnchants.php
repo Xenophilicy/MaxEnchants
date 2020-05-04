@@ -15,18 +15,18 @@
 
 namespace Xenophilicy\MaxEnchants;
 
-use pocketmine\command\{Command,CommandSender,PluginCommand};
-use pocketmine\item\enchantment\{Enchantment,EnchantmentInstance};
-use pocketmine\utils\{Config,TextFormat as TF};
-use pocketmine\plugin\PluginBase;
+use pocketmine\command\{Command, CommandSender, PluginCommand};
 use pocketmine\event\Listener;
+use pocketmine\item\enchantment\{Enchantment, EnchantmentInstance};
 use pocketmine\Player;
+use pocketmine\plugin\PluginBase;
+use pocketmine\utils\{Config, TextFormat as TF};
 
 /**
  * Class MaxEnchants
  * @package Xenophilicy\MaxEnchants
  */
-class MaxEnchants extends PluginBase implements Listener{
+class MaxEnchants extends PluginBase implements Listener {
     
     /**
      * @var string
@@ -47,12 +47,12 @@ class MaxEnchants extends PluginBase implements Listener{
         $pluginManager = $this->getServer()->getPluginManager();
         $pluginManager->registerEvents($this, $this);
         $this->saveDefaultConfig();
-        $this->config = new Config($this->getDataFolder()."config.yml", Config::YAML);
+        $this->config = new Config($this->getDataFolder() . "config.yml", Config::YAML);
         $this->config->getAll();
         $version = $this->config->get("VERSION");
         $this->pluginVersion = $this->getDescription()->getVersion();
         if($version < "1.2.0"){
-            $this->getLogger()->warning("You have updated MaxEnchants to v".$this->pluginVersion." but have a config from v$version! Please delete your old config for new features to be enabled and to prevent unwanted errors! Plugin will remain disabled...");
+            $this->getLogger()->warning("You have updated MaxEnchants to v" . $this->pluginVersion . " but have a config from v$version! Please delete your old config for new features to be enabled and to prevent unwanted errors! Plugin will remain disabled...");
             $pluginManager->disablePlugin($this);
         }
         $include = $this->config->getNested("Broadcast.SendTo");
@@ -60,7 +60,7 @@ class MaxEnchants extends PluginBase implements Listener{
             foreach($include as $inclusion){
                 if(strtolower($inclusion) == "console" || strtolower($inclusion) == "sender" || strtolower($inclusion) == "target"){
                     continue;
-                } else{
+                }else{
                     $this->getLogger()->critical("Invalid message recipient list, allowed recipients are console, sender, and target. Plugin will remain disabled...");
                     $pluginManager->disablePlugin($this);
                     return;
@@ -74,35 +74,35 @@ class MaxEnchants extends PluginBase implements Listener{
                 $this->getLogger()->critical("Invalid custom max levels array found, disabling plugin...");
                 $pluginManager->disablePlugin($this);
                 return;
-            } else{
+            }else{
                 foreach($maxLevels as $id => $level){
                     if(!is_int($id) || !is_int($level) || !$this->isValidEnchant($id)){
                         $this->getLogger()->warning("Invalid max level found at $id, it will not be included!");
-                    } else{
+                    }else{
                         $enchantment = Enchantment::getEnchantment($id);
                         $this->customMaxLevels[$enchantment->getName()] = $level;
                     }
                 }
             }
         }
-        $this->maxLevel = $this->config->get("Max-Level") >= 32767 ? 32767:$this->config->get("Max-Level");
-        $this->cmdName = str_replace("/","",$this->config->getNested("Command.Name"));
+        $this->maxLevel = $this->config->get("Max-Level") >= 32767 ? 32767 : $this->config->get("Max-Level");
+        $this->cmdName = str_replace("/", "", $this->config->getNested("Command.Name"));
         if(is_null($this->cmdName) || $this->cmdName == ""){
             $this->getLogger()->critical("Invalid enchant command string found, disabling plugin...");
             $pluginManager->disablePlugin($this);
             return;
-        } else{
+        }else{
             if(($cmdInstance = $this->getServer()->getCommandMap()->getCommand($this->cmdName)) instanceof Command){
                 if($this->config->getNested("Command.Override")){
-                    $cmdInstance->setLabel("_".$cmdInstance->getName());
+                    $cmdInstance->setLabel("_" . $cmdInstance->getName());
                     $this->getServer()->getCommandMap()->unregister($cmdInstance);
-                } else{
+                }else{
                     $this->getLogger()->critical("Command override disabled in config but command name is set to a default command, please change it to prevent interference with other commands! Plugin will remain disabled...");
                     $pluginManager->disablePlugin($this);
                     return;
                 }
             }
-            $cmd = new PluginCommand($this->cmdName , $this);
+            $cmd = new PluginCommand($this->cmdName, $this);
             $cmd->setDescription($this->config->getNested("Command.Description"));
             if($this->config->getNested("Command.Permission.Enabled")){
                 $cmd->setPermission($this->config->getNested("Command.Permission.Node"));
@@ -111,23 +111,10 @@ class MaxEnchants extends PluginBase implements Listener{
         }
     }
     
-    /**
-     * @param $id
-     * @return bool
-     */
-    private function isValidEnchant($id) : bool{
-        foreach(array_values($this->vanillaEnchants) as $ench){
-            if($ench[1] === $id){
-                return true;
-            }
-        }
-        return false;
-    }
-
-    private function buildVanillaEnchantArray() : void{
+    private function buildVanillaEnchantArray(): void{
         $this->vanillaEnchants = [];
         $reflection = new \ReflectionClass(Enchantment::class);
-		$lastId = -1;
+        $lastId = -1;
         foreach($reflection->getConstants() as $name => $id){
             $lastId++;
             if($id !== $lastId){
@@ -140,49 +127,76 @@ class MaxEnchants extends PluginBase implements Listener{
         }
         return;
     }
-
-    private function enchantItem(CommandSender $sender, array $args) : void{
+    
+    /**
+     * @param $id
+     * @return bool
+     */
+    private function isValidEnchant($id): bool{
+        foreach(array_values($this->vanillaEnchants) as $ench){
+            if($ench[1] === $id){
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    public function onCommand(CommandSender $sender, Command $command, string $label, array $args): bool{
+        if($command->getName() == "maxenchants"){
+            $sender->sendMessage(TF::GRAY . "---" . TF::GOLD . " MaxEnchants " . TF::GRAY . "---");
+            $sender->sendMessage(TF::YELLOW . "Version: " . TF::AQUA . $this->pluginVersion);
+            $sender->sendMessage(TF::YELLOW . "Description: " . TF::AQUA . "Enable enchants up to level 255");
+            $sender->sendMessage(TF::YELLOW . "Command: " . TF::BLUE . "/" . $this->cmdName . " <player> <enchantment ID> [level]");
+            $sender->sendMessage(TF::GRAY . "-------------------");
+        }
+        if($command->getName() == $this->cmdName){
+            $this->enchantItem($sender, $args);
+        }
+        return true;
+    }
+    
+    private function enchantItem(CommandSender $sender, array $args): void{
         if(count($args) < 2 || count($args) > 3){
-            $sender->sendMessage(TF::RED."Usage: /".$this->cmdName." <player> <enchantment ID> [level]");
+            $sender->sendMessage(TF::RED . "Usage: /" . $this->cmdName . " <player> <enchantment ID> [level]");
             return;
         }
         if(($player = $sender->getServer()->getPlayer($args[0])) === null){
-            $sender->sendMessage(TF::RED."Player not found");
+            $sender->sendMessage(TF::RED . "Player not found");
             return;
         }
         if(($item = $player->getInventory()->getItemInHand())->isNull()){
-            $sender->sendMessage(TF::RED."Player must be holding an item");
+            $sender->sendMessage(TF::RED . "Player must be holding an item");
             return;
         }
         if(is_numeric($args[1])){
-            $enchantment = Enchantment::getEnchantment((int) $args[1]);
-        } else{
+            $enchantment = Enchantment::getEnchantment((int)$args[1]);
+        }else{
             $enchantment = Enchantment::getEnchantmentByName($args[1]);
         }
         if(!($enchantment instanceof Enchantment)){
-            $sender->sendMessage(TF::RED."There is no such enchantment with ID ".TF::YELLOW.$args[1]);
+            $sender->sendMessage(TF::RED . "There is no such enchantment with ID " . TF::YELLOW . $args[1]);
             return;
         }
         if(isset($args[2])){
             if(!is_numeric($args[2])){
-                $sender->sendMessage(TF::RED."Enchantment level must be numeric");
+                $sender->sendMessage(TF::RED . "Enchantment level must be numeric");
                 return;
-            } elseif(($desiredLevel = (int) $args[2]) < 1){
-                $sender->sendMessage(TF::RED."Enchantment level must be greater than ".TF::YELLOW."1");
+            }elseif(($desiredLevel = (int)$args[2]) < 1){
+                $sender->sendMessage(TF::RED . "Enchantment level must be greater than " . TF::YELLOW . "1");
                 return;
             }
             if(in_array($enchantment->getName(), array_keys($this->customMaxLevels))){
                 $max = $this->customMaxLevels[$enchantment->getName()];
-            } else{
+            }else{
                 $max = $this->maxLevel;
             }
             if($desiredLevel > $max){
-                $sender->sendMessage(TF::RED."Enchantment level can be at most ".TF::YELLOW.$max);
+                $sender->sendMessage(TF::RED . "Enchantment level can be at most " . TF::YELLOW . $max);
                 return;
-            } else{
+            }else{
                 $level = $args[2];
             }
-        } else{
+        }else{
             $level = 1;
         }
         $item->addEnchantment(new EnchantmentInstance($enchantment, $level));
@@ -198,7 +212,7 @@ class MaxEnchants extends PluginBase implements Listener{
      * @param Player $target
      * @param $sender
      */
-    private function broadcast(string $name, string $level, Player $target, $sender) : void{
+    private function broadcast(string $name, string $level, Player $target, $sender): void{
         $msgString = $this->config->getNested("Broadcast.Message");
         $include = $this->config->getNested("Broadcast.SendTo");
         $msgString = str_replace("{name}", $name, $msgString);
@@ -206,7 +220,7 @@ class MaxEnchants extends PluginBase implements Listener{
         $msgString = str_replace("{target}", $target->getName(), $msgString);
         if($sender instanceof Player){
             $msgString = str_replace("{sender}", $sender->getName(), $msgString);
-        } else{
+        }else{
             $msgString = str_replace("{sender}", "CONSOLE", $msgString);
         }
         $msgString = str_replace("&", "§", $msgString);
@@ -223,19 +237,5 @@ class MaxEnchants extends PluginBase implements Listener{
             }
         }
         return;
-    }
-
-    public function onCommand(CommandSender $sender, Command $command, string $label, array $args) : bool{
-        if($command->getName() == "maxenchants"){
-            $sender->sendMessage(TF::GRAY."---".TF::GOLD." MaxEnchants ".TF::GRAY."---");
-            $sender->sendMessage(TF::YELLOW."Version: ".TF::AQUA.$this->pluginVersion);
-            $sender->sendMessage(TF::YELLOW."Description: ".TF::AQUA."Enable enchants up to level 255");
-            $sender->sendMessage(TF::YELLOW."Command: ".TF::BLUE."/".$this->cmdName." <player> <enchantment ID> [level]");
-            $sender->sendMessage(TF::GRAY."-------------------");
-        }
-        if($command->getName() == $this->cmdName){
-            $this->enchantItem($sender, $args);
-        }
-        return true;
     }
 }
