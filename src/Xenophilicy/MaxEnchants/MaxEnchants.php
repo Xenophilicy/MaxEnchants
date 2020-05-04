@@ -22,8 +22,27 @@ use pocketmine\plugin\PluginBase;
 use pocketmine\event\Listener;
 use pocketmine\Player;
 
+/**
+ * Class MaxEnchants
+ * @package Xenophilicy\MaxEnchants
+ */
 class MaxEnchants extends PluginBase implements Listener{
-
+    
+    /**
+     * @var string
+     */
+    private $pluginVersion;
+    private $customMaxLevels;
+    /**
+     * @var mixed|string|string[]|null
+     */
+    private $cmdName;
+    /**
+     * @var bool|int|mixed
+     */
+    private $maxLevel;
+    private $vanillaEnchants;
+    
     public function onEnable(){
         $pluginManager = $this->getServer()->getPluginManager();
         $pluginManager->registerEvents($this, $this);
@@ -91,7 +110,11 @@ class MaxEnchants extends PluginBase implements Listener{
             $this->getServer()->getCommandMap()->register("MaxEnchants", $cmd, $this->cmdName);
         }
     }
-
+    
+    /**
+     * @param $id
+     * @return bool
+     */
     private function isValidEnchant($id) : bool{
         foreach(array_values($this->vanillaEnchants) as $ench){
             if($ench[1] === $id){
@@ -168,7 +191,13 @@ class MaxEnchants extends PluginBase implements Listener{
         $this->broadcast($enchantmentName, $level, $player, $sender);
         return;
     }
-
+    
+    /**
+     * @param string $name
+     * @param string $level
+     * @param Player $target
+     * @param $sender
+     */
     private function broadcast(string $name, string $level, Player $target, $sender) : void{
         $msgString = $this->config->getNested("Broadcast.Message");
         $include = $this->config->getNested("Broadcast.SendTo");

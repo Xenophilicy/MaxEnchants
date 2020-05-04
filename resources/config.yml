@@ -11,7 +11,7 @@
 #                                         $$ |                                      /  \__$$ |
 #                                         $$ |                                      $$    $$/
 #                                         $$/                                        $$$$$$/
-VERSION: "1.2.0" # Internal use only
+VERSION: "1.2.1" # Internal use only
 
 # This is the max allowed enchanting level with the command in-game
 # Minecraft: Bedrock Edition has a maximum of 32767 enchantment levels
@@ -57,7 +57,7 @@ Command:
   Permission:
 
     # Choose whether to require users to have permission to execute the command
-    Enabled: false
+    Enabled: true
 
     # This is the command's usage permission
     Node: "maxenchants.enchant"
@@ -66,7 +66,10 @@ Command:
   # Keeping this true makes sure that there are not two types of the same command
   Override: true
 
-# Implemented enchantment IDs
+# PocketMine's implemented enchantment IDs
+# NOTE: I do NOT take responsibility for these IDs changing or being incorrect after API updates
+# DOUBLE NOTE: I am also not responsible for adding new "missing" enchantments, these are what's currently implemented
+
 # Protection - 0
 # Fire Protection - 1
 # Feather Falling - 2
