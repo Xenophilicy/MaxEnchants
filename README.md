@@ -1,5 +1,3 @@
-> # I have frozen my personal support for public plugins. The plugins will remain public on GitHub (though archived) for anyone that would like to keep them updated.  This my final decision on the matter. No support will be provided - you will be ignored - regardless of private or public inquiry.
-
 # MaxEnchants
 [![Poggit State](https://poggit.pmmp.io/shield.state/MaxEnchants)](https://poggit.pmmp.io/p/MaxEnchants)
 [![HitCount](http://hits.dwyl.io/Xenophilicy/MaxEnchants.svg)](http://hits.dwyl.io/Xenophilicy/MaxEnchants)
@@ -26,3 +24,4 @@ MaxEnchants is a simple plugin to allow servers to take full advantage of the en
 
 ## Credits
 * [Xenophilicy](https://github.com/Xenophilicy/)
+* [Vecnavium](https://github.com/Vecnavium/) (Longterm Maintainer)
