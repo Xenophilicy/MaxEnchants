@@ -1,9 +1,13 @@
-# MaxEnchants
-[![Poggit State](https://poggit.pmmp.io/shield.state/MaxEnchants)](https://poggit.pmmp.io/p/MaxEnchants)
-[![HitCount](http://hits.dwyl.io/Xenophilicy/MaxEnchants.svg)](http://hits.dwyl.io/Xenophilicy/MaxEnchants)
-[![Discord Chat](https://img.shields.io/discord/490677165289897995.svg)](https://discord.gg/hNVehXe)
+<p align="center">
+    <a href="https://github.com/Xenophilicy/MaxEnchants"><img src="https://github.com/Xenophilicy/MaxEnchants/blob/master/icon.png"></img></a><br>
+    <b>PocketMine plugin to enable enchants up to level 32k!</b>
+</p>
 
-# [![Xenophilicy](http://file.xenoservers.net/Resources/GitHub-Resources/MaxEnchants/screenshot.png)]()
+<p align="center">
+    <img alt="GitHubrelease" src="https://img.shields.io/github/v/release/Xenophilicy/MaxEnchants?label=release&sort=semver">
+      <img alt="Stars" src= "https://img.shields.io/github/stars/Xenophilicy/MaxEnchants?style=for-the-badge">
+    <a href="https://discord.gg/6M9tGyWPjr"><img src="https://img.shields.io/discord/837701868649709568?label=discord&color=7289DA&logo=discord" alt="Discord" /></a>
+</p>
 
 ## Information
 MaxEnchants is a simple plugin to allow servers to take full advantage of the enchanting of items. You can enchant items and blocks with any level of enchantment, and they will perform just as if that was enchanted with the normal server command! You use the same command to enchant with and the exact same syntax. The only difference here is that the levels can be had up to 32k!
