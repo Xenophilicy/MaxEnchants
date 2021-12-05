@@ -17,7 +17,7 @@ MaxEnchants is a simple plugin to allow servers to take full advantage of the en
 ***
 
 ## MaxEnchants Details
-* **API:** 3.0.0+
+* **API:** 4.0.0+
 * **Version:** 1.2.0
 * **Basic Description:** Enchant items up to level 32k!
 * *Simple code for editing and debugging*
