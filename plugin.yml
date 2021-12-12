@@ -11,3 +11,5 @@ commands:
 permissions:
   maxenchants.info:
     default: op
+  maxenchants.enchant:
+    default: op
