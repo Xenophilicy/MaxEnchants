@@ -79,7 +79,8 @@ class MaxEnchants extends PluginBase implements Listener {
                         $this->getLogger()->warning("Invalid max level found at $id, it will not be included!");
                     }else{
                         $enchantment = EnchantmentIdMap::getInstance()->fromId($id);
-                        $this->customMaxLevels[$enchantment->getName()] = $level;
+                        $enchantmentName = $enchantment->getName();
+                        $this->customMaxLevels[is_string($enchantmentName) ? $enchantmentName : $enchantmentName->getText()] = $level;
                     }
                 }
             }
