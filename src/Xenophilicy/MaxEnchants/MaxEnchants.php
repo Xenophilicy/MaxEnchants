@@ -176,7 +176,7 @@ class MaxEnchants extends PluginBase implements Listener {
             $sender->sendMessage(TF::RED . "There is no such enchantment with ID " . TF::YELLOW . $args[1]);
             return;
         }
-        $enchantmnetName = $enchantment->getName();
+        $enchantmentName = $enchantment->getName();
         $enchantmentName = is_string($enchantmentName) ? $enchantmentName : $enchantmentName->getText();
         if(isset($args[2])){
             if(!is_numeric($args[2])){
