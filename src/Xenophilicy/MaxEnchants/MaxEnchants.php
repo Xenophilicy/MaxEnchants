@@ -120,7 +120,8 @@ class MaxEnchants extends PluginBase implements Listener {
             }
             $enchantment = EnchantmentIdMap::getInstance()->fromId($id);
             if($enchantment instanceof Enchantment){
-                $this->vanillaEnchants[$enchantment->getName()] = [ucwords(strtolower(str_replace("_", " ", $name))), $lastId];
+                $enchantmentName = $enchantment->getName();
+                $this->vanillaEnchants[is_string($enchantmentName) ? $enchantmentName : $enchantmentName->getText()] = [ucwords(strtolower(str_replace("_", " ", $name))), $lastId];
             }
         }
     }
@@ -174,6 +175,8 @@ class MaxEnchants extends PluginBase implements Listener {
             $sender->sendMessage(TF::RED . "There is no such enchantment with ID " . TF::YELLOW . $args[1]);
             return;
         }
+        $enchantmnetName = $enchantment->getName();
+        $enchantmentName = is_string($enchantmentName) ? $enchantmentName : $enchantmentName->getText();
         if(isset($args[2])){
             if(!is_numeric($args[2])){
                 $sender->sendMessage(TF::RED . "Enchantment level must be numeric");
@@ -183,7 +186,7 @@ class MaxEnchants extends PluginBase implements Listener {
                 return;
             }
             if(in_array($enchantment->getName(), array_keys($this->customMaxLevels))){
-                $max = $this->customMaxLevels[$enchantment->getName()];
+                $max = $this->customMaxLevels[$enchantmentName];
             }else{
                 $max = $this->maxLevel;
             }
@@ -198,7 +201,7 @@ class MaxEnchants extends PluginBase implements Listener {
         }
         $item->addEnchantment(new EnchantmentInstance($enchantment, $level));
         $player->getInventory()->setItemInHand($item);
-        $enchantmentName = $this->vanillaEnchants[$enchantment->getName()][0] ?? $enchantment->getName();
+        $enchantmentName = $this->vanillaEnchants[$enchantmentName][0] ?? $enchantmentName;
         $this->broadcast($enchantmentName, $level, $player, $sender);
     }
     
