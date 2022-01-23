@@ -33,7 +33,7 @@ class MaxEnchants extends PluginBase implements Listener {
     /** @var string*/
     private string $pluginVersion;
     /** @var array*/
-    private array $customMaxLevels;
+    private array $customMaxLevels = [];
     /** @var mixed|null*/
     private mixed $cmdName;
     /** @var Config*/
