@@ -1,8 +1,8 @@
 name: MaxEnchants
 author: Xenophilicy
-version: 1.2.4
+version: 1.2.5
 main: Xenophilicy\MaxEnchants\MaxEnchants
-api: 4.0.0
+api: 5.0.0
 description: Enable enchants up to level 32k!
 commands:
   maxenchants:
